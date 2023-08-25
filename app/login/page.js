@@ -3,32 +3,37 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import RootLayout from '../layout';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
-  const [email, setEmail] = useState('test@example.com');
-  const [password, setPassword] = useState('123456');
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  console.log(email, password)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log('Submit button clicked'); // Add this line
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
     try {
-      const response = await fetch('/api/readme-login', {
+      const response = await fetch(`/api/readme-login`,{
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+        body: formData,
       });
 
       if (!response.ok) {
         throw new Error('Login failed');
       }
 
-      console.log(response, 'response')
-
-      
-
-      // Redirect logic or handle successful login response
+      const data = await response.text();
+      // console.log(data, "data yg kluar"); // Access the URL data from the response/
+      router.push(data)
 
     } catch (error) {
       console.error('Error:', error);
